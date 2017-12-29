@@ -4,8 +4,17 @@ import discord
 import asyncio
 import subprocess
 
-client = discord.Client()
+# config
 token = "placeDiscordTokenHere"
+trigger = "!fwew"
+bad_chars = "`~@#$%^&*()[]{}<>_/,;:!?|+\"\\"
+default_flags = "-i -ipa"
+space = " "
+dbl_quote = '"'
+sngl_quote = "'"
+md_codeblock = "```"
+
+client = discord.Client()
 
 @client.event
 async def on_ready():
@@ -18,28 +27,28 @@ async def on_ready():
 @client.event
 async def on_message(message):
     # seen the trigger word. also don't allow interactive mode
-    if message.content.startswith("!fwew") and message.content != "!fwew":
+    if message.content.startswith(trigger) and message.content != trigger:
         # "fwew"
         prog = message.content[1:6]
         # remove all the sketchy chars from arguments
         nospec = message.content[6:]
-        for c in "`~@#$%^&*()[]{}<>_/,;:!?|+\"\\":
+        for c in bad_chars:
             nospec = nospec.replace(c, "")
         argv = nospec.split()
         # build argument string putting quotes only where necessary
         argstr = ""
         for arg in argv:
             if arg.startswith("-"):
-                argstr += arg + " "
+                argstr += arg + space
             else:
-                argstr += '"' + arg + '"' + " "
+                argstr += dbl_quote + arg + dbl_quote + space
         # don't try to look up just a quote character
-        if argstr == "" or argstr == "'":
+        if argstr == "" or argstr == sngl_quote:
             pass
         else:
-            response = "```"
-            response += subprocess.getoutput(prog + "-i -ipa " + argstr)
-            response += "```"
+            response = md_codeblock
+            response += subprocess.getoutput(prog + default_flags + space + argstr)
+            response += md_codeblock
             await client.send_message(message.channel, response)
 
 client.run(token)
