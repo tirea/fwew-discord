@@ -8,7 +8,7 @@ import subprocess
 token = "placeDiscordTokenHere"
 trigger = "!fwew"
 bad_chars = "`~@#$%^&*()[]{}<>_/,;:!?|+\"\\"
-default_flags = "-i -ipa"
+default_flags = "" #"-i -ipa"
 space = " "
 dbl_quote = '"'
 sngl_quote = "'"
@@ -46,9 +46,10 @@ async def on_message(message):
         if argstr == "" or argstr == sngl_quote:
             pass
         else:
-            response = md_codeblock
-            response += subprocess.getoutput(prog + default_flags + space + argstr)
-            response += md_codeblock
-            await client.send_message(message.channel, response)
+            print(prog + default_flags + space + argstr)
+            response = subprocess.getoutput(prog + default_flags + space + argstr)
+            em = discord.Embed(title=prog + default_flags + space + argstr, description=response, colour=0x607CA3)
+            em.set_author(name=message.author, icon_url=message.author.avatar_url)
+            await client.send_message(message.channel, embed=em)
 
 client.run(token)
