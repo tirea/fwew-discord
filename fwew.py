@@ -7,7 +7,7 @@ import subprocess
 # config
 token = "placeDiscordTokenHere"
 trigger = "!fwew"
-bad_chars = "`~@#$%^&*()[]{}<>_/,;:!?|+\"\\"
+bad_chars = "`~@#$%^&*()[]{}<>_/,;:!?|+\\"
 default_flags = "" #"-i -ipa"
 space = " "
 dbl_quote = '"'
@@ -41,7 +41,12 @@ async def on_message(message):
             if arg.startswith("-"):
                 argstr += arg + space
             else:
-                argstr += dbl_quote + arg + dbl_quote + space
+                # only surround the word with quotes, if it contains single-quote
+                if "'" in arg or "’" in arg:
+                    argstr += dbl_quote + arg + dbl_quote + space
+                else:
+                    argstr += arg + space
+
         # don't try to look up just a quote character
         if argstr == "" or argstr == sngl_quote:
             pass
