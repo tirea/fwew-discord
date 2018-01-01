@@ -7,14 +7,15 @@ import subprocess
 # config
 token = "placeDiscordTokenHere"
 trigger = "!fwew"
-bad_chars = "`~@#$%^&*()[]{}<>_/,;:!?|+\\"
-default_flags = "" #"-i -ipa"
+bad_chars = "`~@#$%^&*(){}<>_/,.;:!?|+\\"
+default_flags = ""  # "-i -ipa"
 space = " "
 dbl_quote = '"'
 sngl_quote = "'"
 md_codeblock = "```"
 
 client = discord.Client()
+
 
 @client.event
 async def on_ready():
