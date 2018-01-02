@@ -8,7 +8,7 @@ import subprocess
 token = "placeDiscordTokenHere"
 trigger = "!fwew"
 bad_chars = "`~@#$%^&*(){}<>_/;:!?|+\\"
-default_flags = ""  # "-i -ipa"
+default_flags = "-ipa -m"
 space = " "
 dbl_quote = '"'
 sngl_quote = "'"
