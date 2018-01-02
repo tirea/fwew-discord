@@ -54,7 +54,7 @@ async def on_message(message):
         else:
             print(prog + default_flags + space + argstr)
             response = subprocess.getoutput(prog + default_flags + space + argstr)
-            em = discord.Embed(title=prog + default_flags + space + argstr, description=response, colour=0x607CA3)
+            em = discord.Embed(title=argstr, description=response, colour=0x607CA3)
             em.set_author(name=message.author, icon_url=message.author.avatar_url)
             await client.send_message(message.channel, embed=em)
 
