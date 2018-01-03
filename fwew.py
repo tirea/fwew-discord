@@ -43,7 +43,7 @@ async def on_message(message):
                 argstr += arg + space
             else:
                 # only surround the word with quotes, if it contains single-quote
-                if "'" in arg or "’" in arg:
+                if ("'" in arg or "’" in arg) and '"' not in arg:
                     argstr += dbl_quote + arg + dbl_quote + space
                 else:
                     argstr += arg + space
