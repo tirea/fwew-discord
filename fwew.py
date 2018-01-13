@@ -3,16 +3,17 @@
 import discord
 import asyncio
 import subprocess
+from config import cfg as config
 
 # config
-token = "placeDiscordTokenHere"
-trigger = "!fwew"
-bad_chars = "`~@#$%^&*(){}<>_/;:!?|+\\"
-default_flags = "-ipa -m"
-space = " "
-dbl_quote = '"'
-sngl_quote = "'"
-md_codeblock = "```"
+token = config["token"]
+space = config["space"]
+trigger = config["trigger"]
+bad_chars = config["bad_chars"]
+dbl_quote = config["dbl_quote"]
+sngl_quote = config["sngl_quote"]
+md_codeblock = config["md_codeblock"]
+default_flags = config["default_flags"]
 
 client = discord.Client()
 
@@ -30,7 +31,7 @@ async def on_message(message):
     # seen the trigger word. also don't allow interactive mode
     if message.content.startswith(trigger) and message.content != trigger:
         # "fwew"
-        prog = message.content[1:6]
+        prog = message.content[1:5]
         # remove all the sketchy chars from arguments
         nospec = message.content[6:]
         for c in bad_chars:
@@ -52,7 +53,7 @@ async def on_message(message):
         if argstr == "" or argstr == sngl_quote:
             pass
         else:
-            print(prog + default_flags + space + argstr)
+            print(prog + space + default_flags + space + argstr)
             response = subprocess.getoutput(prog + default_flags + space + argstr)
             em = discord.Embed(title=argstr, description=response, colour=0x607CA3)
             em.set_author(name=message.author, icon_url=message.author.avatar_url)
