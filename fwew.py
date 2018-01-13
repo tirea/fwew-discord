@@ -57,6 +57,8 @@ async def on_message(message):
             response = subprocess.getoutput(prog + space + default_flags + space + argstr)
             em = discord.Embed(title=argstr, description=response, colour=0x607CA3)
             em.set_author(name=message.author, icon_url=message.author.avatar_url)
+            if message == "!fwew Eywa" or message == "!fwew eywa":
+                em.set_image(url="https://cdn.discordapp.com/attachments/154318499722952704/401596598624321536/image.png")
             await client.send_message(message.channel, embed=em)
 
 client.run(token)
