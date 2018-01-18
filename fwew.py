@@ -12,6 +12,7 @@ trigger = config["trigger"]
 bad_chars = config["bad_chars"]
 dbl_quote = config["dbl_quote"]
 sngl_quote = config["sngl_quote"]
+quote_chars = config["quote_chars"]
 md_codeblock = config["md_codeblock"]
 default_flags = config["default_flags"]
 
@@ -53,6 +54,9 @@ async def on_message(message):
         if argstr == "" or argstr == sngl_quote:
             pass
         else:
+            # convert quotes
+            for qc in quote_chars:
+                argstr = argstr.replace(qc, "\"")
             print(prog + space + default_flags + space + argstr)
             response = subprocess.getoutput(prog + space + default_flags + space + argstr)
             em = discord.Embed(title=argstr, description=response, colour=0x607CA3)
