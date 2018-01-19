@@ -13,6 +13,7 @@ bad_chars = config["bad_chars"]
 dbl_quote = config["dbl_quote"]
 sngl_quote = config["sngl_quote"]
 quote_chars = config["quote_chars"]
+squote_chars = config["squote_chars"]
 md_codeblock = config["md_codeblock"]
 default_flags = config["default_flags"]
 
@@ -38,6 +39,12 @@ async def on_message(message):
         for c in bad_chars:
             nospec = nospec.replace(c, "")
         argv = nospec.split()
+        # convert quotes
+        for arg in argv:
+            for qc in quote_chars:
+                arg = arg.replace(qc, "\"")
+            for sqc in squote_chars:
+                arg = arg.replace(sqc, "'")
         # build argument string putting quotes only where necessary
         argstr = ""
         for arg in argv:
@@ -45,7 +52,7 @@ async def on_message(message):
                 argstr += arg + space
             else:
                 # only surround the word with quotes, if it contains single-quote
-                if ("'" in arg or "’" in arg) and '"' not in arg:
+                if ("'" in arg) and '"' not in arg:
                     argstr += dbl_quote + arg + dbl_quote + space
                 else:
                     argstr += arg + space
@@ -54,9 +61,6 @@ async def on_message(message):
         if argstr == "" or argstr == sngl_quote:
             pass
         else:
-            # convert quotes
-            for qc in quote_chars:
-                argstr = argstr.replace(qc, "\"")
             print(prog + space + default_flags + space + argstr)
             response = subprocess.getoutput(prog + space + default_flags + space + argstr)
             em = discord.Embed(title=argstr, description=response, colour=0x607CA3)
