@@ -40,11 +40,11 @@ async def on_message(message):
             nospec = nospec.replace(c, "")
         argv = nospec.split()
         # convert quotes
-        for arg in argv:
+        for i in range(len(argv)):
             for qc in quote_chars:
-                arg = arg.replace(qc, "\"")
+                argv[i] = argv[i].replace(qc, "\"")
             for sqc in squote_chars:
-                arg = arg.replace(sqc, "'")
+                argv[i] = argv[i].replace(sqc, "'")
         # build argument string putting quotes only where necessary
         argstr = ""
         for arg in argv:
