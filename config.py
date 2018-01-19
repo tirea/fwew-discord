@@ -4,7 +4,7 @@ cfg = {
     "sngl_quote": "'",
     "trigger": "!fwew",
     "md_codeblock": "```",
-    "squote_chars": "‘’`",
+    "squote_chars": "‘’`´",
     "quote_chars": "„“”«»",
     "default_flags": "-ipa -m",
     "bad_chars": "`~@#$%^&*(){}<>_/;:!?|+\\",
