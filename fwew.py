@@ -30,8 +30,11 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    # april fools aliasing
+    if message.content.startswith("!ngarulufpomsrak") and message.content != "!ngarulufpomsrak" and message.content != "!ngarulufpomsrak -r" and message.content != "!ngarulufpomsrak -lufpomngarutut":
+        message.content = message.content.replace("!ngarulufpomsrak", "!fwew").replace("-lufpomngarutut", "-r")
     # seen the trigger word. also don't allow interactive mode
-    if message.content.startswith(trigger) and message.content != trigger:
+    if message.content.startswith(trigger) and message.content != trigger and message.content != trigger + "-r":
         # "fwew"
         prog = message.content[1:5]
         # remove all the sketchy chars from arguments
