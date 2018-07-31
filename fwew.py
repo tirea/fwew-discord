@@ -30,6 +30,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    c = None
     # april fools aliasing
     if message.content.startswith("!ngarulufpomsrak") and message.content != "!ngarulufpomsrak" and message.content != "!ngarulufpomsrak -r" and message.content != "!ngarulufpomsrak -lufpomngarutut":
         message.content = message.content.replace("!ngarulufpomsrak", "!fwew").replace("-lufpomngarutut", "-r")
@@ -68,11 +69,14 @@ async def on_message(message):
             response = subprocess.getoutput(prog + space + default_flags + space + argstr)
             em = discord.Embed(title=argstr, description=response, colour=0x607CA3)
             em.set_author(name=message.author, icon_url=message.author.avatar_url)
-            if message.content == "!fwew Eywa" or message.content == "!fwew eywa":
+            if message.content.lower() == "!fwew eywa":
                 em.set_image(url="https://cdn.discordapp.com/attachments/154318499722952704/401596598624321536/image.png")
+            if message.content.lower() == "!fwew hrh":
+                em.description = "https://youtu.be/-AgnLH7Dw3w?t=4m14s"
+                c = "```> What would LOL be?\n> It would have to do with the word herangham... maybe HRH```"
             if message.content == "!fwew TunaYayo":
                 em.description = ""
                 em.set_image(url="https://cdn.discordapp.com/avatars/277818358655877125/42371a0df717f9d079ba1ff7beaa8a93.png?")
-            await client.send_message(message.channel, embed=em)
+            await client.send_message(message.channel, content=c, embed=em)
 
 client.run(token)
