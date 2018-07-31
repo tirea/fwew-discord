@@ -30,7 +30,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    c = None
+    # c = ""
     # april fools aliasing
     if message.content.startswith("!ngarulufpomsrak") and message.content != "!ngarulufpomsrak" and message.content != "!ngarulufpomsrak -r" and message.content != "!ngarulufpomsrak -lufpomngarutut":
         message.content = message.content.replace("!ngarulufpomsrak", "!fwew").replace("-lufpomngarutut", "-r")
@@ -73,10 +73,11 @@ async def on_message(message):
                 em.set_image(url="https://cdn.discordapp.com/attachments/154318499722952704/401596598624321536/image.png")
             if message.content.lower() == "!fwew hrh":
                 em.description = "https://youtu.be/-AgnLH7Dw3w?t=4m14s"
-                c = "```> What would LOL be?\n> It would have to do with the word herangham... maybe HRH```"
+                #c = "```> What would LOL be?\n> It would have to do with the word herangham... maybe HRH```"
+                em.description += "\n> What would LOL be?\n> It would have to do with the word herangham... maybe HRH"
             if message.content == "!fwew TunaYayo":
                 em.description = ""
                 em.set_image(url="https://cdn.discordapp.com/avatars/277818358655877125/42371a0df717f9d079ba1ff7beaa8a93.png?")
-            await client.send_message(message.channel, content=c, embed=em)
+            await client.send_message(message.channel, embed=em) #, content=c)
 
 client.run(token)
