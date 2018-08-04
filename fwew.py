@@ -6,8 +6,13 @@ import subprocess
 from config import cfg as config
 
 # config
+name = config["name"]
+prog = config["prog"]
 token = config["token"]
 space = config["space"]
+ver_num = config["ver_num"]
+ver_chn = config["ver_chn"]
+ver_cod = config["ver_cod"]
 trigger = config["trigger"]
 bad_chars = config["bad_chars"]
 dbl_quote = config["dbl_quote"]
@@ -30,25 +35,23 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    # c = ""
-    # april fools aliasing
-    if message.content.startswith("!ngarulufpomsrak") and message.content != "!ngarulufpomsrak" and message.content != "!ngarulufpomsrak -r" and message.content != "!ngarulufpomsrak -lufpomngarutut":
-        message.content = message.content.replace("!ngarulufpomsrak", "!fwew").replace("-lufpomngarutut", "-r")
-    # seen the trigger word. also don't allow interactive mode
-    if message.content.startswith(trigger) and message.content != trigger and message.content != trigger + "-r":
-        # "fwew"
-        prog = message.content[1:5]
+    # seen the trigger word
+    if message.content.startswith(trigger)
+    # don't allow interactive REPL mode
+    and message.content != trigger and message.content != trigger + "-r":
         # remove all the sketchy chars from arguments
-        nospec = message.content[6:]
+        nospec = message.content[6:]  # len('!fwew ') == 6
         for c in bad_chars:
             nospec = nospec.replace(c, "")
-        argv = nospec.split()
+
         # convert quotes
+        argv = nospec.split()
         for i in range(len(argv)):
             for qc in quote_chars:
                 argv[i] = argv[i].replace(qc, "\"")
             for sqc in squote_chars:
                 argv[i] = argv[i].replace(sqc, "'")
+
         # build argument string putting quotes only where necessary
         argstr = ""
         for arg in argv:
@@ -62,22 +65,36 @@ async def on_message(message):
                     argstr += arg + space
 
         # don't try to look up just a quote character
-        if argstr == "" or argstr == sngl_quote:
+        if argstr == "" or argstr == sngl_quote or argstr == dbl_quote:
             pass
         else:
+            # anonymous logging of entire actual system command to run in shell
             print(prog + space + default_flags + space + argstr)
-            response = subprocess.getoutput(prog + space + default_flags + space + argstr)
-            em = discord.Embed(title=argstr, description=response, colour=0x607CA3)
-            em.set_author(name=message.author, icon_url=message.author.avatar_url)
-            if message.content.lower() == "!fwew eywa":
-                em.set_image(url="https://cdn.discordapp.com/attachments/154318499722952704/401596598624321536/image.png")
-            if message.content.lower() == "!fwew hrh":
+
+            # run the fwew program from shell and capture stdout in response
+            response = subprocess.getoutput(
+                prog + space + default_flags + space + argstr)
+
+            em = discord.Embed(
+                title=argstr, description=response, colour=0x607CA3)
+            em.set_author(name=message.author.display_name,
+                          icon_url=message.author.avatar_url)
+
+            if message.content.lower() == "!fwew -v":
+                em.description = "%s version %s-%s %s" % (
+                    name, ver_num, ver_chn, ver_cod)
+            # some hardcoded eastereggs
+            elif message.content.lower() == "!fwew eywa":
+                em.set_image(
+                    url="https://cdn.discordapp.com/attachments/154318499722952704/401596598624321536/image.png")
+            elif message.content.lower() == "!fwew hrh":
                 em.description = "https://youtu.be/-AgnLH7Dw3w?t=4m14s"
-                #c = "```> What would LOL be?\n> It would have to do with the word herangham... maybe HRH```"
                 em.description += "\n> What would LOL be?\n> It would have to do with the word herangham... maybe HRH"
-            if message.content == "!fwew TunaYayo":
+            elif message.content.lower() == "!fwew tunayayo":
                 em.description = ""
-                em.set_image(url="https://cdn.discordapp.com/avatars/277818358655877125/42371a0df717f9d079ba1ff7beaa8a93.png?")
-            await client.send_message(message.channel, embed=em) #, content=c)
+                em.set_image(
+                    url="https://cdn.discordapp.com/avatars/277818358655877125/42371a0df717f9d079ba1ff7beaa8a93.png?")
+
+            await client.send_message(message.channel, embed=em)
 
 client.run(token)
