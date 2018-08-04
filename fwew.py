@@ -33,12 +33,25 @@ async def on_ready():
     print("------")
 
 
+def valid(query):
+    qs = query.split()
+    # first part of query must be trigger
+    if qs[0] != trigger:
+        return False
+    # query must contain trigger and something to look up
+    if len(qs) < 2:
+        return False
+    # make sure that after the flag args there is at least one word
+    for q in qs[1:]:
+        if not q.startswith("-"):
+            return True
+    return False
+
+
 @client.event
 async def on_message(message):
-    # seen the trigger word
-    if message.content.startswith(trigger)
-    # don't allow interactive REPL mode
-    and message.content != trigger and message.content != trigger + "-r":
+    # validate user's query
+    if valid(message.content):
         # remove all the sketchy chars from arguments
         nospec = message.content[6:]  # len('!fwew ') == 6
         for c in bad_chars:
