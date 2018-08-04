@@ -34,7 +34,10 @@ async def on_ready():
 
 
 def valid(query):
-    qs = query.split()
+    # only get version is valid query
+    if query == trigger + " -v":
+        return True
+    qs = query.split(" ")
     # first part of query must be trigger
     if qs[0] != trigger:
         return False
@@ -93,8 +96,8 @@ async def on_message(message):
             em.set_author(name=message.author.display_name,
                           icon_url=message.author.avatar_url)
 
-            if message.content.lower() == "!fwew -v":
-                em.description = "%s version %s-%s %s" % (
+            if message.content.lower() == trigger + " -v":
+                em.description += "\n%s version %s-%s %s" % (
                     name, ver_num, ver_chn, ver_cod)
             # some hardcoded eastereggs
             elif message.content.lower() == "!fwew eywa":
