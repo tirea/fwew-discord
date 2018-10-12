@@ -2,7 +2,7 @@ cfg = {
     "prog": "fwew",
     "trigger": "!fwew",
     "name": "fwew-discord",
-    "ver_num": "1.1.0",
+    "ver_num": "2.0.0",
     "ver_chn": "dev",
     "ver_cod": "\"Letwana Nantang\"",
     "space": " ",
