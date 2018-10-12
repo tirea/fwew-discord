@@ -53,6 +53,7 @@ def valid(query):
 
 @client.event
 async def on_message(message):
+    send_pm = False
     # validate user's query
     if valid(message.content):
         # remove all the sketchy chars from arguments
@@ -94,31 +95,55 @@ async def on_message(message):
         else:
             # anonymous logging of entire actual system command to run in shell
             print(prog + space + default_flags + space + argstr)
-
             # run the fwew program from shell and capture stdout in response
-            response = subprocess.getoutput(
-                prog + space + default_flags + space + argstr)
+            response = subprocess.getoutput(prog + space + default_flags + space + argstr)
+            # prepare an array for splitting the message just in case
+            response_fragments = []
+            embeds = []
+            char_limit = 2000
+            if len(response) > char_limit:  # Discord Character limit is 2000
+                send_pm = True
+                fragment = ""
+                char_count = 0
+                response_lines = response.split('\n')
+                for line in response_lines:
+                    if char_count + len(line) + 1 <= char_limit:
+                        fragment += line + '\n'
+                        char_count += len(line) + 1
+                    else:
+                        response_fragments.append(fragment)
+                        fragment = line + '\n'
+                        char_count = len(line) + 1
+                response_fragments.append(fragment)
+            else:
+                response_fragments.append(response)
+            for r in response_fragments:
+                em = discord.Embed(
+                    title=argstr, description=r, colour=0x607CA3)
+                em.set_author(name=message.author.display_name,
+                              icon_url=message.author.avatar_url)
+                if message.content.lower() == trigger + " -v":
+                    em.description += "\n%s version %s-%s %s" % (
+                        name, ver_num, ver_chn, ver_cod)
+                # some hardcoded eastereggs
+                elif message.content.lower() == "!fwew eywa":
+                    em.set_image(
+                        url="https://cdn.discordapp.com/attachments/154318499722952704/401596598624321536/image.png")
+                elif message.content.lower() == "!fwew hrh":
+                    em.description = "https://youtu.be/-AgnLH7Dw3w?t=4m14s"
+                    em.description += "\n> What would LOL be?\n> It would have to do with the word herangham... maybe HRH"
+                elif message.content.lower() == "!fwew tunayayo":
+                    em.description = ""
+                    em.set_image(
+                        url="https://cdn.discordapp.com/avatars/277818358655877125/42371a0df717f9d079ba1ff7beaa8a93.png?")
+                embeds.append(em)
 
-            em = discord.Embed(
-                title=argstr, description=response, colour=0x607CA3)
-            em.set_author(name=message.author.display_name,
-                          icon_url=message.author.avatar_url)
-
-            if message.content.lower() == trigger + " -v":
-                em.description += "\n%s version %s-%s %s" % (
-                    name, ver_num, ver_chn, ver_cod)
-            # some hardcoded eastereggs
-            elif message.content.lower() == "!fwew eywa":
-                em.set_image(
-                    url="https://cdn.discordapp.com/attachments/154318499722952704/401596598624321536/image.png")
-            elif message.content.lower() == "!fwew hrh":
-                em.description = "https://youtu.be/-AgnLH7Dw3w?t=4m14s"
-                em.description += "\n> What would LOL be?\n> It would have to do with the word herangham... maybe HRH"
-            elif message.content.lower() == "!fwew tunayayo":
-                em.description = ""
-                em.set_image(
-                    url="https://cdn.discordapp.com/avatars/277818358655877125/42371a0df717f9d079ba1ff7beaa8a93.png?")
-
-            await client.send_message(message.channel, embed=em)
+            if send_pm:
+                # sends PM if len(response) > char_limit
+                for e in embeds:
+                    await client.send_message(message.author, embed=e)
+            else:
+                for e in embeds:
+                    await client.send_message(message.channel, embed=e)
 
 client.run(token)
