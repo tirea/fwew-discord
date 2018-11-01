@@ -79,6 +79,9 @@ async def on_message(message):
         # automatically use Dutch in the Dutch channel
         elif message.channel.id == "466721683496239105": # #nederlands
             argstr += "-l=nl" + space
+        # automatically use Russian in the Russian channel
+        elif message.channel.id == "507306946190114846": # #русский
+            argstr += "-l=ru" + space
         for arg in argv:
             if arg.startswith("-"):
                 argstr += arg + space
