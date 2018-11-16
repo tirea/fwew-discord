@@ -2,7 +2,7 @@ cfg = {
     "prog": "fwew",
     "trigger": "!fwew",
     "name": "fwew-discord",
-    "ver_num": "2.0.1",
+    "ver_num": "2.0.2",
     "ver_chn": "dev",
     "ver_cod": "\"Letwana Nantang\"",
     "space": " ",
@@ -12,6 +12,6 @@ cfg = {
     "squote_chars": "‘’`´",
     "quote_chars": "„“”«»",
     "default_flags": "-ipa -m",
-    "bad_chars": "`~@#$%^&*(){}_;:!?|+\\",
+    "bad_chars": "`~@#$%^&*(){}_;:!?|\\",
     "token": "placeDiscordBotTokenHere",
 }
