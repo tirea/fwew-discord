@@ -12,6 +12,6 @@ cfg = {
     "squote_chars": "‘’`´",
     "quote_chars": "„“”«»",
     "default_flags": "-ipa -m",
-    "bad_chars": "`~@#$%^&*(){}<>_;:!?|+\\",
+    "bad_chars": "`~@#$%^&*(){}_;:!?|+\\",
     "token": "placeDiscordBotTokenHere",
 }
