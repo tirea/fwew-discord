@@ -1,48 +1,50 @@
 # python3 fwew.py
 # depends discord.py
 import discord
-import asyncio
 import subprocess
-from config import cfg as config
+from config import cfg
 
 # config
-name = config["name"]
-prog = config["prog"]
-token = config["token"]
-space = config["space"]
-ver_num = config["ver_num"]
-ver_chn = config["ver_chn"]
-ver_cod = config["ver_cod"]
-trigger = config["trigger"]
-bad_chars = config["bad_chars"]
-dbl_quote = config["dbl_quote"]
-sngl_quote = config["sngl_quote"]
-quote_chars = config["quote_chars"]
-squote_chars = config["squote_chars"]
-md_codeblock = config["md_codeblock"]
-default_flags = config["default_flags"]
+name = cfg["name"]
+prog = cfg["prog"]
+token = cfg["token"]
+space = cfg["space"]
+ver_num = cfg["ver_num"]
+ver_chn = cfg["ver_chn"]
+ver_cod = cfg["ver_cod"]
+trigger = cfg["trigger"]
+hrh_url = cfg["hrh_url"]
+eywa_url = cfg["eywa_url"]
+tuna_url = cfg["tuna_url"]
+bad_chars = cfg["bad_chars"]
+dbl_quote = cfg["dbl_quote"]
+sngl_quote = cfg["sngl_quote"]
+quote_chars = cfg["quote_chars"]
+squote_chars = cfg["squote_chars"]
+md_codeblock = cfg["md_codeblock"]
+default_flags = cfg["default_flags"]
 
-client = discord.Client()
-
-
-@client.event
-async def on_ready():
-    print("Logged in as")
-    print(client.user.name)
-    print(client.user.id)
-    print("------")
+fwew = discord.Client()
+# fwew = discord.ext.commands.Bot(command_prefix="!")
+# @fwew.command(name='fwew')
+# I've come to realize that fwew cannot use the discord bot commands convention because:
+# after the trigger, it needs to use the rest of the user's message which has high variance
+# I can't make a bot command for every possible input like this, so on_message is required in this case.
 
 
 def valid(query):
     # only get version is valid query
     if query == trigger + " -v":
         return True
-    qs = query.split(" ")
-    # first part of query must be trigger
-    if qs[0] != trigger:
+    # query cannot be just a quote character
+    if query == sngl_quote or query == dbl_quote:
         return False
+    qs = query.split(" ")
     # query must contain trigger and something to look up
     if len(qs) < 2:
+        return False
+    # first part of query must be trigger
+    if qs[0] != trigger:
         return False
     # make sure that after the flag args there is at least one word
     for q in qs[1:]:
@@ -51,13 +53,22 @@ def valid(query):
     return False
 
 
-@client.event
+@fwew.event
+async def on_ready():
+    print("Logged in as")
+    print(fwew.user.name)
+    print(fwew.user.id)
+    print("------")
+
+
+@fwew.event
 async def on_message(message):
     send_pm = False
     # validate user's query
     if valid(message.content):
+        tlen = len(trigger) + 1  # add one for space-character
         # remove all the sketchy chars from arguments
-        nospec = message.content[6:]  # len('!fwew ') == 6
+        nospec = message.content[tlen:]
         for c in bad_chars:
             nospec = nospec.replace(c, "")
 
@@ -72,15 +83,15 @@ async def on_message(message):
         # build argument string putting quotes only where necessary
         argstr = ""
         # automatically use German if in a German channel
-        if message.channel.id == "398213699552411648": # #lerngruppe
+        if message.channel.id == "398213699552411648":  # #lerngruppe
             argstr += "-l=de" + space
-        elif message.channel.id == "298701183898484737": # #deutsch
+        elif message.channel.id == "298701183898484737":  # #deutsch
             argstr += "-l=de" + space
         # automatically use Dutch in the Dutch channel
-        elif message.channel.id == "466721683496239105": # #nederlands
+        elif message.channel.id == "466721683496239105":  # #nederlands
             argstr += "-l=nl" + space
         # automatically use Russian in the Russian channel
-        elif message.channel.id == "507306946190114846": # #русский
+        elif message.channel.id == "507306946190114846":  # #русский
             argstr += "-l=ru" + space
         for arg in argv:
             if arg.startswith("-"):
@@ -92,61 +103,55 @@ async def on_message(message):
                 else:
                     argstr += arg + space
 
-        # don't try to look up just a quote character
-        if argstr == "" or argstr == sngl_quote or argstr == dbl_quote:
-            pass
+        # anonymous logging of entire actual system command to run in shell
+        print(prog + space + default_flags + space + argstr)
+        # run the fwew program from shell and capture stdout in response
+        response = subprocess.getoutput(prog + space + default_flags + space + argstr)
+        # prepare an array for splitting the message just in case
+        response_fragments = []
+        embeds = []
+        char_limit = 2000
+        if len(response) > char_limit:  # Discord Character limit is 2000
+            send_pm = True
+            fragment = ""
+            char_count = 0
+            response_lines = response.split('\n')
+            for line in response_lines:
+                if char_count + len(line) + 1 <= char_limit:
+                    fragment += line + '\n'
+                    char_count += len(line) + 1
+                else:
+                    response_fragments.append(fragment)
+                    fragment = line + '\n'
+                    char_count = len(line) + 1
+            response_fragments.append(fragment)
         else:
-            # anonymous logging of entire actual system command to run in shell
-            print(prog + space + default_flags + space + argstr)
-            # run the fwew program from shell and capture stdout in response
-            response = subprocess.getoutput(prog + space + default_flags + space + argstr)
-            # prepare an array for splitting the message just in case
-            response_fragments = []
-            embeds = []
-            char_limit = 2000
-            if len(response) > char_limit:  # Discord Character limit is 2000
-                send_pm = True
-                fragment = ""
-                char_count = 0
-                response_lines = response.split('\n')
-                for line in response_lines:
-                    if char_count + len(line) + 1 <= char_limit:
-                        fragment += line + '\n'
-                        char_count += len(line) + 1
-                    else:
-                        response_fragments.append(fragment)
-                        fragment = line + '\n'
-                        char_count = len(line) + 1
-                response_fragments.append(fragment)
-            else:
-                response_fragments.append(response)
-            for r in response_fragments:
-                em = discord.Embed(
-                    title=argstr, description=r, colour=0x607CA3)
-                em.set_author(name=message.author.display_name,
-                              icon_url=message.author.avatar_url)
-                if message.content.lower() == trigger + " -v":
-                    em.description += "\n%s version %s-%s %s" % (
-                        name, ver_num, ver_chn, ver_cod)
-                # some hardcoded eastereggs
-                elif message.content.lower() == "!fwew eywa":
-                    em.set_image(
-                        url="https://cdn.discordapp.com/attachments/154318499722952704/401596598624321536/image.png")
-                elif message.content.lower() == "!fwew hrh":
-                    em.description = "https://youtu.be/-AgnLH7Dw3w?t=4m14s"
-                    em.description += "\n> What would LOL be?\n> It would have to do with the word herangham... maybe HRH"
-                elif message.content.lower() == "!fwew tunayayo":
-                    em.description = ""
-                    em.set_image(
-                        url="https://cdn.discordapp.com/avatars/277818358655877125/42371a0df717f9d079ba1ff7beaa8a93.png?")
-                embeds.append(em)
+            response_fragments.append(response)
+        for r in response_fragments:
+            em = discord.Embed(title=argstr, description=r, colour=0x607CA3)
+            em.set_author(name=message.author.display_name, icon_url=message.author.avatar_url)
+            if message.content.lower() == trigger + " -v":
+                em.description += "\n%s version %s-%s %s" % (
+                    name, ver_num, ver_chn, ver_cod)
+            # some hardcoded Easter eggs
+            elif message.content.lower() == trigger + " eywa":
+                em.set_image(url=eywa_url)
+            elif message.content.lower() == trigger + " hrh":
+                em.description = hrh_url
+                em.description += "\n"
+                em.description += "> What would LOL be?\n"
+                em.description += "> It would have to do with the word herangham... maybe HRH"
+            elif message.content.lower() == trigger + " tunayayo":
+                em.description = ""
+                em.set_image(url=tuna_url)
+            embeds.append(em)
 
-            if send_pm:
-                # sends PM if len(response) > char_limit
-                for e in embeds:
-                    await client.send_message(message.author, embed=e)
-            else:
-                for e in embeds:
-                    await client.send_message(message.channel, embed=e)
+        if send_pm:
+            # sends PM if len(response) > char_limit
+            for e in embeds:
+                await message.author.dm_channel.send(message.author, embed=e)
+        else:
+            for e in embeds:
+                await message.author.dm_channel.send(message.channel, embed=e)
 
-client.run(token)
+fwew.run(token)
