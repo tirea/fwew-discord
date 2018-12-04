@@ -152,6 +152,6 @@ async def on_message(message):
                 await message.author.dm_channel.send(message.author, embed=e)
         else:
             for e in embeds:
-                await message.author.dm_channel.send(message.channel, embed=e)
+                await message.channel.send(embed=e)
 
 fwew.run(token)
