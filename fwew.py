@@ -149,7 +149,7 @@ async def on_message(message):
         if send_pm:
             # sends PM if len(response) > char_limit
             for e in embeds:
-                await message.author.dm_channel.send(message.author, embed=e)
+                await message.author.dm_channel.send(embed=e)
         else:
             for e in embeds:
                 await message.channel.send(embed=e)
