@@ -83,15 +83,15 @@ async def on_message(message):
         # build argument string putting quotes only where necessary
         argstr = ""
         # automatically use German if in a German channel
-        if message.channel.id == "398213699552411648":  # #lerngruppe
+        if message.channel.id == 398213699552411648:  # #lerngruppe
             argstr += "-l=de" + space
-        elif message.channel.id == "298701183898484737":  # #deutsch
+        elif message.channel.id == 298701183898484737:  # #deutsch
             argstr += "-l=de" + space
         # automatically use Dutch in the Dutch channel
-        elif message.channel.id == "466721683496239105":  # #nederlands
+        elif message.channel.id == 466721683496239105:  # #nederlands
             argstr += "-l=nl" + space
         # automatically use Russian in the Russian channel
-        elif message.channel.id == "507306946190114846":  # #русский
+        elif message.channel.id == 507306946190114846:  # #русский
             argstr += "-l=ru" + space
         for arg in argv:
             if arg.startswith("-"):
