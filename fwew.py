@@ -3,6 +3,7 @@
 import discord
 import subprocess
 from config import cfg
+from tokiponavi import lukin
 
 # config
 name = cfg["name"]
@@ -72,8 +73,8 @@ async def on_message(message):
         for c in bad_chars:
             nospec = nospec.replace(c, "")
 
-        # convert quotes
         argv = nospec.split()
+        # convert quotes
         for i in range(len(argv)):
             for qc in quote_chars:
                 argv[i] = argv[i].replace(qc, "\"")
@@ -106,7 +107,8 @@ async def on_message(message):
         # anonymous logging of entire actual system command to run in shell
         print(prog + space + default_flags + space + argstr)
         # run the fwew program from shell and capture stdout in response
-        response = subprocess.getoutput(prog + space + default_flags + space + argstr)
+        response = subprocess.getoutput(
+            prog + space + default_flags + space + argstr)
         # prepare an array for splitting the message just in case
         response_fragments = []
         embeds = []
@@ -129,21 +131,40 @@ async def on_message(message):
             response_fragments.append(response)
         for r in response_fragments:
             em = discord.Embed(title=argstr, description=r, colour=0x607CA3)
-            em.set_author(name=message.author.display_name, icon_url=message.author.avatar_url)
+            em.set_author(name=message.author.display_name,
+                          icon_url=message.author.avatar_url)
             if message.content.lower() == trigger + " -v":
                 em.description += "\n%s version %s-%s %s" % (
                     name, ver_num, ver_chn, ver_cod)
             # some hardcoded Easter eggs
-            elif message.content.lower() == trigger + " eywa":
+            elif message.content.lower() == trigger + space + "eywa":
                 em.set_image(url=eywa_url)
-            elif message.content.lower() == trigger + " hrh":
+            elif message.content.lower() == trigger + space + "hrh":
                 em.description = hrh_url
                 em.description += "\n"
                 em.description += "> What would LOL be?\n"
                 em.description += "> It would have to do with the word herangham... maybe HRH"
-            elif message.content.lower() == trigger + " tunayayo":
+            elif message.content.lower() == trigger + space + "tunayayo":
                 em.description = ""
                 em.set_image(url=tuna_url)
+            elif message.content.lower().startswith(trigger + space + "-lmftfy"):
+                lmftfy_cmd = message.content.lower().split(' ')
+                if len(lmftfy_cmd) >= 4:
+                    lmftfy_args = lmftfy_cmd[2:]
+                    recipient = lmftfy_args[0]
+                    lmftfy_query = trigger + space + \
+                        space.join(lmftfy_args[1:])
+                    lmftfy_op = subprocess.getoutput(
+                        prog + space + default_flags + space + space.join(lmftfy_args[1:]))
+                    em.title = ""
+                    em.set_author(name=recipient, icon_url="")
+                    em.description = "Let me fwew that for you..."
+                    em.description += "\n\n"
+                    em.description += lmftfy_query
+                    em.description += "\n\n"
+                    em.description += lmftfy_op[0:char_limit]
+            elif len(argv) > 1 and argv[0] == "-tp":
+                em.description = lukin(argv)
             embeds.append(em)
 
         if send_pm:
