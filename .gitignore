@@ -1,4 +1,8 @@
 .idea
 .ropeproject
 __pycache__
-*.txt
+queries.txt
+log.txt
+test.txt
+output.txt
+input.txt
