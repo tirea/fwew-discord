@@ -91,6 +91,8 @@ async def on_message(message):
         # automatically use Dutch in the Dutch channel
         elif message.channel.id == 466721683496239105:  # #nederlands
             argstr += "-l=nl" + space
+        elif message.channel.id == 649363324143665192:  # polski
+            argstr += "-l=pl" + space
         # automatically use Russian in the Russian channel
         elif message.channel.id == 507306946190114846:  # #русский
             argstr += "-l=ru" + space
