@@ -153,17 +153,17 @@ async def on_message(message):
                 em.set_image(url=tuna_url)
             elif message.content.lower().startswith(trigger + space + "-lmftfy"):
                 lmftfy_cmd = message.content.lower().split(' ')
-                if len(lmftfy_cmd) >= 4:
-                    lmftfy_args = lmftfy_cmd[2:]
-                    recipient = lmftfy_args[0]
+                if len(lmftfy_cmd) >= 3:
+                    lmftfy_args = lmftfy_cmd[1:]
+                    # recipient = lmftfy_args[0]
                     lmftfy_query = trigger + space + \
                         space.join(lmftfy_args[1:])
                     lmftfy_op = subprocess.getoutput(
                         prog + space + default_flags + space + space.join(lmftfy_args[1:]))
-                    em.title = ""
-                    em.set_author(name=recipient, icon_url="")
-                    em.description = "Let me fwew that for you..."
-                    em.description += "\n\n"
+                    em.title = "Let me fwew that for you..."
+                    # em.set_author(name=recipient, icon_url="")
+                    # em.description = "Let me fwew that for you..."
+                    # em.description += "\n\n"
                     em.description += lmftfy_query
                     em.description += "\n\n"
                     em.description += lmftfy_op[0:char_limit]
