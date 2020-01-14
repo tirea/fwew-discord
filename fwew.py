@@ -33,20 +33,21 @@ fwew = discord.Client()
 # I can't make a bot command for every possible input like this, so on_message is required in this case.
 
 
-def valid(query):
+def valid(query, dm):
     # only get version is valid query
     if query == trigger + " -v":
         return True
     # query cannot be just a quote character
     if query == sngl_quote or query == dbl_quote:
         return False
-    qs = query.split(" ")
-    # query must contain trigger and something to look up
-    if len(qs) < 2:
-        return False
-    # first part of query must be trigger
-    if qs[0] != trigger:
-        return False
+    if not dm:
+        qs = query.split(" ")
+        # query must contain trigger and something to look up
+        if len(qs) < 2:
+            return False
+        # first part of query must be trigger
+        if qs[0] != trigger:
+            return False
     # make sure that after the flag args there is at least one word
     for q in qs[1:]:
         if not q.startswith("-"):
@@ -66,7 +67,7 @@ async def on_ready():
 async def on_message(message):
     send_pm = False
     # validate user's query
-    if valid(message.content):
+    if valid(message.content, message.channel.members == 1):
         tlen = len(trigger) + 1  # add one for space-character
         # remove all the sketchy chars from arguments
         nospec = message.content[tlen:]
