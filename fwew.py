@@ -40,8 +40,8 @@ def valid(query, dm):
     # query cannot be just a quote character
     if query == sngl_quote or query == dbl_quote:
         return False
+    qs = query.split(" ")
     if not dm:
-        qs = query.split(" ")
         # query must contain trigger and something to look up
         if len(qs) < 2:
             return False
