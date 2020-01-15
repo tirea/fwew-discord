@@ -39,6 +39,7 @@ def valid(query, dm):
         return False
     qs = query.split(" ")
     if dm:
+        print("in valid(), in DM, got query=%s, %s" % (query, dm))
         # only get version is valid query
         if query == "-v":
             return True
@@ -46,6 +47,10 @@ def valid(query, dm):
         if len(qs) < 1:
             return False
         # if first part of query is not trigger, still valid
+        if qs[0] == trigger:
+            start = 1
+        else:
+            start = 0
     else:
         # only get version is valid query
         if query == trigger + " -v":
@@ -56,10 +61,13 @@ def valid(query, dm):
         # first part of query must be trigger
         if qs[0] != trigger:
             return False
+        start = 1
     # make sure that after the flag args there is at least one word
-    for q in qs[1:]:
+    for q in qs[start:]:
         if not q.startswith("-"):
+            print("valid() returning True")
             return True
+    print("valid() returning False")
     return False
 
 
@@ -73,13 +81,21 @@ async def on_ready():
 
 @fwew.event
 async def on_message(message):
+    # my own messages are not to be considered HRH
+    if message.author == fwew.user:
+        return False
+
     send_pm = False
     # validate user's query
-    is_pm = message.channel == discord.channel.DMChannel
+    is_pm = isinstance(message.channel, discord.channel.DMChannel)
+    print(type(message.channel))
     if valid(message.content, is_pm):
         tlen = len(trigger) + 1  # add one for space-character
         # remove all the sketchy chars from arguments
-        nospec = message.content[tlen:]
+        if is_pm:
+            nospec = message.content[:]
+        else:
+            nospec = message.content[tlen:]
         for c in bad_chars:
             nospec = nospec.replace(c, "")
 
