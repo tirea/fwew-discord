@@ -34,14 +34,22 @@ fwew = discord.Client()
 
 
 def valid(query, dm):
-    # only get version is valid query
-    if query == trigger + " -v":
-        return True
     # query cannot be just a quote character
     if query == sngl_quote or query == dbl_quote:
         return False
     qs = query.split(" ")
-    if not dm:
+    if dm:
+        # only get version is valid query
+        if query == "-v":
+            return True
+        # query must contain something to look up
+        if len(qs) < 1:
+            return False
+        # if first part of query is not trigger, still valid
+    else:
+        # only get version is valid query
+        if query == trigger + " -v":
+            return True
         # query must contain trigger and something to look up
         if len(qs) < 2:
             return False
@@ -67,7 +75,8 @@ async def on_ready():
 async def on_message(message):
     send_pm = False
     # validate user's query
-    if valid(message.content, message.channel.members == 1):
+    is_pm = message.channel == discord.channel.DMChannel
+    if valid(message.content, is_pm):
         tlen = len(trigger) + 1  # add one for space-character
         # remove all the sketchy chars from arguments
         nospec = message.content[tlen:]
