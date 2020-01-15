@@ -39,7 +39,6 @@ def valid(query, dm):
         return False
     qs = query.split(" ")
     if dm:
-        print("in valid(), in DM, got query=%s, %s" % (query, dm))
         # only get version is valid query
         if query == "-v":
             return True
@@ -65,9 +64,7 @@ def valid(query, dm):
     # make sure that after the flag args there is at least one word
     for q in qs[start:]:
         if not q.startswith("-"):
-            print("valid() returning True")
             return True
-    print("valid() returning False")
     return False
 
 
@@ -88,7 +85,6 @@ async def on_message(message):
     send_pm = False
     # validate user's query
     is_pm = isinstance(message.channel, discord.channel.DMChannel)
-    print(type(message.channel))
     if valid(message.content, is_pm):
         tlen = len(trigger) + 1  # add one for space-character
         # remove all the sketchy chars from arguments
