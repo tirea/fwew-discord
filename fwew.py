@@ -38,21 +38,22 @@ def valid(query, dm):
     if query == sngl_quote or query == dbl_quote:
         return False
     qs = query.split(" ")
+    # query is in a Direct Message channel
     if dm:
         # only get version is valid query
-        if query == "-v":
+        if query == "-v" or query == trigger + space + "-v":
             return True
         # query must contain something to look up
         if len(qs) < 1:
             return False
-        # if first part of query is not trigger, still valid
+        # still putting the trigger should work
         if qs[0] == trigger:
             start = 1
         else:
             start = 0
     else:
         # only get version is valid query
-        if query == trigger + " -v":
+        if query == trigger + space + " -v":
             return True
         # query must contain trigger and something to look up
         if len(qs) < 2:
@@ -62,6 +63,7 @@ def valid(query, dm):
             return False
         start = 1
     # make sure that after the flag args there is at least one word
+    print(qs[start:])
     for q in qs[start:]:
         if not q.startswith("-"):
             return True
