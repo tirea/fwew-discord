@@ -167,6 +167,9 @@ async def on_message(message):
             if message.content.lower() == trigger + " -v":
                 em.description += "\n%s version %s-%s %s" % (
                     name, ver_num, ver_chn, ver_cod)
+            elif dm and message.content.lower() == "-v":
+                em.description += "\n%s version %s-%s %s" % (
+                    name, ver_num, ver_chn, ver_cod)
             # some hardcoded Easter eggs
             elif message.content.lower() == trigger + space + "eywa":
                 em.set_image(url=eywa_url)
