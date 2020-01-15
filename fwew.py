@@ -63,7 +63,6 @@ def valid(query, dm):
             return False
         start = 1
     # make sure that after the flag args there is at least one word
-    print(qs[start:])
     for q in qs[start:]:
         if not q.startswith("-"):
             return True
