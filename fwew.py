@@ -91,7 +91,10 @@ async def on_message(message):
         tlen = len(trigger) + 1  # add one for space-character
         # remove all the sketchy chars from arguments
         if is_pm:
-            nospec = message.content[:]
+            if message.content.startswith(trigger):
+                nospec = message.content[tlen:]
+            else:
+                nospec = message.content[:]
         else:
             nospec = message.content[tlen:]
         for c in bad_chars:
