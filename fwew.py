@@ -167,7 +167,7 @@ async def on_message(message):
             if message.content.lower() == trigger + " -v":
                 em.description += "\n%s version %s-%s %s" % (
                     name, ver_num, ver_chn, ver_cod)
-            elif dm and message.content.lower() == "-v":
+            elif is_pm and message.content.lower() == "-v":
                 em.description += "\n%s version %s-%s %s" % (
                     name, ver_num, ver_chn, ver_cod)
             # some hardcoded Easter eggs
