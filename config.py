@@ -2,7 +2,7 @@ cfg = {
     "prog": "fwew",
     "trigger": "!fwew",
     "name": "fwew-discord",
-    "ver_num": "3.0.1",
+    "ver_num": "4.0.0",
     "ver_chn": "dev",
     "ver_cod": "\"Kllvawma Kenten\"",
     "space": " ",

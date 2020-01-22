@@ -98,14 +98,24 @@ async def on_message(message):
             nospec = message.content[tlen:]
         for c in bad_chars:
             nospec = nospec.replace(c, "")
-
-        argv = nospec.split()
         # convert quotes
-        for i in range(len(argv)):
-            for qc in quote_chars:
-                argv[i] = argv[i].replace(qc, "\"")
-            for sqc in squote_chars:
-                argv[i] = argv[i].replace(sqc, "'")
+        for qc in quote_chars:
+            nospec = nospec.replace(qc, "\"")
+        for sqc in squote_chars:
+            nospec = nospec.replace(sqc, "'")
+
+        # add quotes around slash-command
+        argv_arr = nospec.split(",")
+        for i in range(len(argv_arr)):
+            # but not if they're already there
+            if (argv_arr[i].startswith('/"') or argv_arr[i].startswith('"/')) and argv_arr[i].endswith('"'):
+                pass
+            else:
+                if argv_arr[i].startswith("/"):
+                    argv_arr[i] = '"' + argv_arr[i] + '"'
+                elif argv_arr[i].startswith(" /"):
+                    argv_arr[i] = space + '"' + argv_arr[i][1:] + '"'
+        nospec = ','.join(argv_arr)
 
         # build argument string putting quotes only where necessary
         argstr = ""
@@ -124,6 +134,7 @@ async def on_message(message):
             argstr += "-l=ru" + space
         elif message.channel.id == 652214951225589760:
             argstr += "-i -s" + space
+        argv = nospec.split()
         for arg in argv:
             if arg.startswith("-"):
                 argstr += arg + space
@@ -136,9 +147,11 @@ async def on_message(message):
 
         # anonymous logging of entire actual system command to run in shell
         print(prog + space + default_flags + space + argstr)
+
         # run the fwew program from shell and capture stdout in response
         response = subprocess.getoutput(
             prog + space + default_flags + space + argstr)
+
         # prepare an array for splitting the message just in case
         response_fragments = []
         embeds = []
@@ -159,6 +172,7 @@ async def on_message(message):
             response_fragments.append(fragment)
         else:
             response_fragments.append(response)
+
         for r in response_fragments:
             em = discord.Embed(title=argstr, description=r, colour=0x607CA3)
             em.set_author(name=message.author.display_name,
