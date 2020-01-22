@@ -4,7 +4,7 @@ cfg = {
     "name": "fwew-discord",
     "ver_num": "4.0.0",
     "ver_chn": "dev",
-    "ver_cod": "\"Kllvawma Kenten\"",
+    "ver_cod": "\"Lefpoma Lortsyal\"",
     "space": " ",
     "dbl_quote": '"',
     "sngl_quote": "'",
