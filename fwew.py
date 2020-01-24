@@ -53,7 +53,7 @@ def valid(query, dm):
             start = 0
     else:
         # only get version is valid query
-        if query == trigger + space + " -v":
+        if query == trigger + space + "-v":
             return True
         # query must contain trigger and something to look up
         if len(qs) < 2:
