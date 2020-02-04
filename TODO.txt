@@ -1,2 +1,1 @@
-drop quotes around slashcommands syntax in favor of comma-separated
 
