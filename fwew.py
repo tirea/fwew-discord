@@ -119,6 +119,8 @@ async def on_message(message):
 
         # build argument string putting quotes only where necessary
         argstr = ""
+
+        # international channel default language flags
         # automatically use German if in a German channel
         if message.channel.id == 398213699552411648:  # #lerngruppe
             argstr += "-l=de" + space
@@ -127,7 +129,7 @@ async def on_message(message):
         # automatically use Dutch in the Dutch channel
         elif message.channel.id == 466721683496239105:  # #nederlands
             argstr += "-l=nl" + space
-		# automatically use Polish in the Polish channel
+        # automatically use Polish in the Polish channel
         elif message.channel.id == 649363324143665192:  # #polski
             argstr += "-l=pl" + space
         # automatically use Russian in the Russian channel
@@ -135,16 +137,18 @@ async def on_message(message):
             argstr += "-l=ru" + space
         elif message.channel.id == 365987412163297284:  # #français
             argstr += "-l=fr" + space
-		# custom defaults
-        elif message.channel.id == 652214951225589760:
+        # custom defaults
+        elif message.channel.id == 652214951225589760:  # #???
             argstr += "-i -s" + space
+
+        # arguments
         argv = nospec.split()
         for arg in argv:
             if arg.startswith("-"):
                 argstr += arg + space
             else:
                 # only surround the word with quotes, if it contains single-quote
-                if ("'" in arg) and '"' not in arg:
+                if ("'" in arg) and ('"' not in arg):
                     argstr += dbl_quote + arg + dbl_quote + space
                 else:
                     argstr += arg + space
