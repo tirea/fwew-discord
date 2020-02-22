@@ -181,7 +181,10 @@ async def on_message(message):
         else:
             response_fragments.append(response)
 
+        title_limit = 256
         for r in response_fragments:
+            if len(argstr > title_limit):
+                argstr = argstr[:title_limit] + "..."
             em = discord.Embed(title=argstr, description=r, colour=0x607CA3)
             em.set_author(name=message.author.display_name,
                           icon_url=message.author.avatar_url)
