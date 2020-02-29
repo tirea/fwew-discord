@@ -108,13 +108,13 @@ async def on_message(message):
         argv_arr = nospec.split(",")
         for i in range(len(argv_arr)):
             # but not if they're already there
-            if (argv_arr[i].startswith('/"') or argv_arr[i].startswith('"/')) and argv_arr[i].endswith('"'):
+            if ('/"' in argv_arr[i] or '"/' in argv_arr[i]) and argv_arr[i].endswith('"'):
                 pass
             else:
-                if argv_arr[i].startswith("/"):
-                    argv_arr[i] = '"' + argv_arr[i] + '"'
+                if "/" in argv_arr[i]:
+                    argv_arr[i] = argv_arr[i].replace('/', '"/') + '"'
                 elif argv_arr[i].startswith(" /"):
-                    argv_arr[i] = space + '"' + argv_arr[i][1:] + '"'
+                    argv_arr[i] = space + argv_arr[i][1:].replace('/', '"/') + '"'
         nospec = ','.join(argv_arr)
 
         # build argument string putting quotes only where necessary
