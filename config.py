@@ -2,7 +2,7 @@ cfg = {
     "prog": "fwew",
     "trigger": "!fwew",
     "name": "fwew-discord",
-    "ver_num": "4.1.1",
+    "ver_num": "4.1.2",
     "ver_chn": "dev",
     "ver_cod": "\"Lefpoma Lortsyal\"",
     "space": " ",
