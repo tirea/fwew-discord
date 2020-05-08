@@ -2,6 +2,7 @@
 # depends discord.py
 import discord
 import subprocess
+from datetime import datetime
 from config import cfg
 from tokiponavi import lukin
 
@@ -33,11 +34,34 @@ fwew = discord.Client()
 # I can't make a bot command for every possible input like this, so on_message is required in this case.
 
 
+def has_words(args):
+    arglist = args.split()
+    if len(arglist) == 0:
+        return False
+    # precondition: list is not empty.
+    if arglist[-1].startswith("-") and arglist[-1] != "-h":
+        return False
+    # precondition: list is not empty and last item doesn't start with "-"
+    if len(arglist) == 1:
+        return True
+    # precondition: list size > 1 and last item doesn't start with "-"
+    if arglist[-2] in ["-p", "-l"]:
+        return False
+    # preconditions:
+    # list size > 1
+    # last item doesn't start with "-"
+    # second-to-last item isn't -p or -l
+    return True
+
+
 def valid(query, dm):
     # query cannot be just a quote character
     if query == sngl_quote or query == dbl_quote:
         return False
     qs = query.split(" ")
+    # do not allow config or debug
+    if "-c" in qs or "-d" in qs:
+        return False
     # query is in a Direct Message channel
     if dm:
         # only get version is valid query
@@ -63,18 +87,79 @@ def valid(query, dm):
             return False
         start = 1
     # make sure that after the flag args there is at least one word
-    for q in qs[start:]:
-        if not q.startswith("-"):
-            return True
+    if has_words(query):
+        return True
     return False
+
+
+def cleanup(query):
+    # remove all the sketchy chars from arguments
+    nospec = query
+    for c in bad_chars:
+        nospec = nospec.replace(c, "")
+    # convert quotes
+    for qc in quote_chars:
+        nospec = nospec.replace(qc, "\"")
+    for sqc in squote_chars:
+        nospec = nospec.replace(sqc, "'")
+    return nospec
+
+
+def add_quotes(query):
+    # add quotes around slash-command
+    argv_arr = query.split(",")
+    for i in range(len(argv_arr)):
+        # but not if they're already there
+        if ('/"' in argv_arr[i] or '"/' in argv_arr[i]) and argv_arr[i].endswith('"'):
+            pass
+        else:
+            if "/" in argv_arr[i]:
+                argv_arr[i] = argv_arr[i].replace('/', '"/') + '"'
+            elif argv_arr[i].startswith(" /"):
+                argv_arr[i] = space + argv_arr[i][1:].replace('/', '"/') + '"'
+    return ','.join(argv_arr)
+
+
+def localize(chan_id):
+    id_map = {
+    "#lerngruppe": 398213699552411648,
+    "#deutsch": 298701183898484737,
+    "#nederlands": 466721683496239105,
+    "#polski": 649363324143665192,
+    "#русский": 507306946190114846,
+    "#français": 365987412163297284,
+    "#custom_0": 652214951225589760}
+    s = ""
+    # international channel default language flags
+    if chan_id == id_map["#lerngruppe"]:
+        s += "-l=de" + space
+    elif chan_id == id_map["#deutsch"]:
+        s += "-l=de" + space
+    elif chan_id == id_map["#nederlands"]:
+        s += "-l=nl" + space
+    elif chan_id == id_map["#polski"]:
+        s += "-l=pl" + space
+    elif chan_id == id_map["#русский"]:
+        s += "-l=ru" + space
+    elif chan_id == id_map["#français"]:
+        s += "-l=fr" + space
+    # custom defaults
+    elif chan_id == id_map["#custom_0"]:
+        s += "-i -s" + space
+    return s
 
 
 @fwew.event
 async def on_ready():
-    print("Logged in as")
-    print(fwew.user.name)
-    print(fwew.user.id)
-    print("------")
+    with open("log.txt", "a") as log:
+        timestamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
+        log.write(timestamp)
+        log.write(" | ")
+        log.write("login: ")
+        log.write(fwew.user.name)
+        log.write(space)
+        log.write(str(fwew.user.id))
+        log.write("\n")
 
 
 @fwew.event
@@ -96,50 +181,14 @@ async def on_message(message):
                 nospec = message.content[:]
         else:
             nospec = message.content[tlen:]
-        for c in bad_chars:
-            nospec = nospec.replace(c, "")
-        # convert quotes
-        for qc in quote_chars:
-            nospec = nospec.replace(qc, "\"")
-        for sqc in squote_chars:
-            nospec = nospec.replace(sqc, "'")
+        nospec = cleanup(nospec)
 
         # add quotes around slash-command
-        argv_arr = nospec.split(",")
-        for i in range(len(argv_arr)):
-            # but not if they're already there
-            if ('/"' in argv_arr[i] or '"/' in argv_arr[i]) and argv_arr[i].endswith('"'):
-                pass
-            else:
-                if "/" in argv_arr[i]:
-                    argv_arr[i] = argv_arr[i].replace('/', '"/') + '"'
-                elif argv_arr[i].startswith(" /"):
-                    argv_arr[i] = space + argv_arr[i][1:].replace('/', '"/') + '"'
-        nospec = ','.join(argv_arr)
+        nospec = add_quotes(nospec)
 
         # build argument string putting quotes only where necessary
-        argstr = ""
-
-        # international channel default language flags
-        # automatically use German if in a German channel
-        if message.channel.id == 398213699552411648:  # #lerngruppe
-            argstr += "-l=de" + space
-        elif message.channel.id == 298701183898484737:  # #deutsch
-            argstr += "-l=de" + space
-        # automatically use Dutch in the Dutch channel
-        elif message.channel.id == 466721683496239105:  # #nederlands
-            argstr += "-l=nl" + space
-        # automatically use Polish in the Polish channel
-        elif message.channel.id == 649363324143665192:  # #polski
-            argstr += "-l=pl" + space
-        # automatically use Russian in the Russian channel
-        elif message.channel.id == 507306946190114846:  # #русский
-            argstr += "-l=ru" + space
-        elif message.channel.id == 365987412163297284:  # #français
-            argstr += "-l=fr" + space
-        # custom defaults
-        elif message.channel.id == 652214951225589760:  # #???
-            argstr += "-i -s" + space
+        # localize based on current channel
+        argstr = localize(message.channel.id)
 
         # arguments
         argv = nospec.split()
@@ -153,18 +202,21 @@ async def on_message(message):
                 else:
                     argstr += arg + space
 
+        # 2>&1 redirects stderr to stdout so that fwew -h output is captured
+        command = prog + space + default_flags + space + argstr + "2>&1"
+
         # anonymous logging of entire actual system command to run in shell
-        print(prog + space + default_flags + space + argstr)
+        print(command)
 
         # run the fwew program from shell and capture stdout in response
-        response = subprocess.getoutput(
-            prog + space + default_flags + space + argstr)
+        response = subprocess.getoutput(command)
 
         # prepare an array for splitting the message just in case
         response_fragments = []
         embeds = []
         char_limit = 2000
-        if len(response) > char_limit:  # Discord Character limit is 2000
+        # Discord Character limit is 2000
+        if len(response) > char_limit:
             send_pm = True
             fragment = ""
             char_count = 0
@@ -196,32 +248,36 @@ async def on_message(message):
                     name, ver_num, ver_chn, ver_cod)
             # some hardcoded Easter eggs
             elif message.content.lower() == trigger + space + "eywa":
+                # WHO'S EYWA?!
                 em.set_image(url=eywa_url)
             elif message.content.lower() == trigger + space + "hrh":
+                # KP "HRH" video
                 em.description = hrh_url
                 em.description += "\n"
                 em.description += "> What would LOL be?\n"
                 em.description += "> It would have to do with the word herangham... maybe HRH"
             elif message.content.lower() == trigger + space + "tunayayo":
+                # TunaYayo pfp
                 em.description = ""
                 em.set_image(url=tuna_url)
             elif message.content.lower().startswith(trigger + space + "-lmftfy"):
+                # Let me Fwew that for you...
                 lmftfy_cmd = message.content.lower().split(' ')
                 if len(lmftfy_cmd) >= 3:
-                    lmftfy_args = lmftfy_cmd[1:]
-                    # recipient = lmftfy_args[0]
-                    lmftfy_query = trigger + space + \
-                        space.join(lmftfy_args[1:])
-                    lmftfy_op = subprocess.getoutput(
-                        prog + space + default_flags + space + space.join(lmftfy_args[1:]))
+                    lmftfy_args = lmftfy_cmd[2:]
+                    recipient = lmftfy_args[0]
+                    lmftfy_query = trigger + space + space.join(lmftfy_args[1:])
+                    fwew_query = prog + space + default_flags + space + space.join(lmftfy_args[1:])
+                    lmftfy_op = subprocess.getoutput(fwew_query)
                     em.title = "Let me fwew that for you..."
-                    # em.set_author(name=recipient, icon_url="")
-                    # em.description = "Let me fwew that for you..."
-                    # em.description += "\n\n"
+                    em.set_author(name=recipient, icon_url="")
+                    em.description = ""
+                    em.description += "\n\n"
                     em.description += lmftfy_query
                     em.description += "\n\n"
                     em.description += lmftfy_op[0:char_limit]
             elif len(argv) > 1 and argv[0] == "-tp":
+                # Toki Pona -> Nävis Translator
                 em.description = lukin(argv)
             embeds.append(em)
 
