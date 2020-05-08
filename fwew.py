@@ -16,9 +16,11 @@ ver_chn = cfg["ver_chn"]
 ver_cod = cfg["ver_cod"]
 trigger = cfg["trigger"]
 hrh_url = cfg["hrh_url"]
+logfile = cfg["logfile"]
 eywa_url = cfg["eywa_url"]
 tuna_url = cfg["tuna_url"]
 bad_chars = cfg["bad_chars"]
+queryfile = cfg["queryfile"]
 dbl_quote = cfg["dbl_quote"]
 sngl_quote = cfg["sngl_quote"]
 quote_chars = cfg["quote_chars"]
@@ -151,7 +153,7 @@ def localize(chan_id):
 
 @fwew.event
 async def on_ready():
-    with open("log.txt", "a") as log:
+    with open(logfile, "a") as log:
         timestamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
         log.write(timestamp)
         log.write(" | ")
@@ -206,7 +208,8 @@ async def on_message(message):
         command = prog + space + default_flags + space + argstr + "2>&1"
 
         # anonymous logging of entire actual system command to run in shell
-        print(command)
+        with open(queryfile, "a") as qf:
+            qf.write(command + "\n")
 
         # run the fwew program from shell and capture stdout in response
         response = subprocess.getoutput(command)
