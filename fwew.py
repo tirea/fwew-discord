@@ -211,8 +211,12 @@ async def on_message(message):
         with open(queryfile, "a") as qf:
             qf.write(command + "\n")
 
-        # run the fwew program from shell and capture stdout in response
-        response = subprocess.getoutput(command)
+        # prevent go-prompt interactive hijacking / freezing
+        if len(argstr) != 0:
+            # run the fwew program from shell and capture stdout in response
+            response = subprocess.getoutput(command)
+        else:
+            response = "no results"
 
         # prepare an array for splitting the message just in case
         response_fragments = []
