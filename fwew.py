@@ -204,8 +204,11 @@ async def on_message(message):
                 else:
                     argstr += arg + space
 
-        # 2>&1 redirects stderr to stdout so that fwew -h output is captured
-        command = prog + space + default_flags + space + argstr + "2>&1"
+        if len(argstr) != 0:
+            # 2>&1 redirects stderr to stdout so that fwew -h output is captured
+            command = prog + space + default_flags + space + argstr + "2>&1"
+        else:
+            command = "(no command due to empty args)"
 
         # anonymous logging of entire actual system command to run in shell
         with open(queryfile, "a") as qf:
