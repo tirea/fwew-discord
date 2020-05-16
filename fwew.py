@@ -270,22 +270,22 @@ async def on_message(message):
                 # TunaYayo pfp
                 em.description = ""
                 em.set_image(url=tuna_url)
-            elif message.content.lower().startswith(trigger + space + "-lmftfy"):
-                # Let me Fwew that for you...
-                lmftfy_cmd = message.content.lower().split(' ')
-                if len(lmftfy_cmd) >= 3:
-                    lmftfy_args = lmftfy_cmd[2:]
-                    recipient = lmftfy_args[0]
-                    lmftfy_query = trigger + space + space.join(lmftfy_args[1:])
-                    fwew_query = prog + space + default_flags + space + space.join(lmftfy_args[1:])
-                    lmftfy_op = subprocess.getoutput(fwew_query)
-                    em.title = "Let me fwew that for you..."
-                    em.set_author(name=recipient, icon_url="")
-                    em.description = ""
-                    em.description += "\n\n"
-                    em.description += lmftfy_query
-                    em.description += "\n\n"
-                    em.description += lmftfy_op[0:char_limit]
+            # elif message.content.lower().startswith(trigger + space + "-lmftfy"):
+            #     # Let me Fwew that for you...
+            #     lmftfy_cmd = message.content.lower().split(' ')
+            #     if len(lmftfy_cmd) >= 3:
+            #         lmftfy_args = lmftfy_cmd[2:]
+            #         recipient = lmftfy_args[0]
+            #         lmftfy_query = trigger + space + space.join(lmftfy_args[1:])
+            #         fwew_query = prog + space + default_flags + space + space.join(lmftfy_args[1:])
+            #         lmftfy_op = subprocess.getoutput(fwew_query)
+            #         em.title = "Let me fwew that for you..."
+            #         em.set_author(name=recipient, icon_url="")
+            #         em.description = ""
+            #         em.description += "\n\n"
+            #         em.description += lmftfy_query
+            #         em.description += "\n\n"
+            #         em.description += lmftfy_op[0:char_limit]
             elif len(argv) > 1 and argv[0] == "-tp":
                 # Toki Pona -> Nävis Translator
                 em.description = lukin(argv)
