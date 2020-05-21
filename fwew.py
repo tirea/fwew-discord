@@ -130,14 +130,14 @@ def localize(chan_id):
     "#polski": 649363324143665192,
     "#русский": 507306946190114846,
     "#français": 365987412163297284,
-	"#lerngruppe-übungsraum":706593256435351662,
+    "#lerngruppe-übungsraum":706593256435351662,
     "#custom_0": 652214951225589760}
     s = ""
     # international channel default language flags
     if chan_id == id_map["#lerngruppe"]:
         s += "-l=de" + space
-	elif chan_id == id_map["lerngruppe-übungsraum"]:
-		s += "-l=de" + space
+    elif chan_id == id_map["lerngruppe-übungsraum"]:
+        s += "-l=de" + space
     elif chan_id == id_map["#deutsch"]:
         s += "-l=de" + space
     elif chan_id == id_map["#nederlands"]:
