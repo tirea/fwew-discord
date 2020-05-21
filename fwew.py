@@ -136,7 +136,7 @@ def localize(chan_id):
     # international channel default language flags
     if chan_id == id_map["#lerngruppe"]:
         s += "-l=de" + space
-    elif chan_id == id_map["lerngruppe-übungsraum"]:
+    elif chan_id == id_map["#lerngruppe-übungsraum"]:
         s += "-l=de" + space
     elif chan_id == id_map["#deutsch"]:
         s += "-l=de" + space
